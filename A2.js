@@ -8,6 +8,8 @@ var grid = true;
 // get some info about the canvas
 var canvas = document.getElementById('c');
 var context = canvas.getContext('2d');
+// var used to turn off interval
+var interval;
 // how many cells fit on the canvas
 var w = Math.floor((canvas.width / blockSize));
 var h = Math.floor((canvas.height / blockSize));
@@ -77,8 +79,8 @@ $(canvas).click(function(e) {
     }
 
     if (state[gy][gx]) {
-        // if pressed before, flash red
-        fill('red', gx, gy);
+        // if pressed before, flash #999999
+        fill('#999999', gx, gy);
         setTimeout(function() {
             fill('black', gx, gy)
         }, 1000);
@@ -130,21 +132,22 @@ $("#gridIO").click(function(e) {
 });
 
 $("#start").click(function(e){
-    startGame();
+    startGame(1000);
     $("#next").prop('disabled', true);
 });
 
 $("#stop").click(function(e){
+    clearInterval(interval);
     $("#next").prop('disabled', false);
 });
 
 $("#next").click(function(e){
-    console.log("Height" + state.length);
     for (var i = 0; i < state.length; i++) {
         for (var j = 0; j < state[i].length; j++) {
             determineFate(i,j);
         }
-    };
+    }
+    drawGrid();
 });
 
 // Fill in state colors
@@ -153,12 +156,15 @@ function fill(s, gx, gy) {
     context.fillRect(gx * blockSize, gy * blockSize, blockSize, blockSize);
 }
 
-var startGame = function() {
-    for (var i = 0; i < state.length; i++) {
-        for (var j = 0; j < state[i].length; j++) {
-            console.log(state[i][j]);
+var startGame = function(time) {
+    interval = setInterval(function() {
+        for (var i = 0; i < state.length; i++) {
+            for (var j = 0; j < state[i].length; j++) {
+                determineFate(i,j);
+            }
         }
-    }
+        drawGrid();
+    }, time);
 }
 
 var drawStates = function() {
@@ -168,7 +174,7 @@ var drawStates = function() {
                 fill('black', i, j);
             }
             if (state[j][i] == status.killed) {
-                fill('red', i, j);
+                fill('#999999', i, j);
             }
             if (state[j][i] == status.dead) {
                 fill('#c0c0c0', i, j);
@@ -208,7 +214,7 @@ var determineFate = function(x, y) {
 
         if (count < loneliness) {
             state[y][x] = status.killed;
-            fill('red', x, y);
+            fill('#999999', x, y);
         }
         // Equallibrium hard coded???
         else if (count > 1 && count < 4) {
@@ -217,12 +223,12 @@ var determineFate = function(x, y) {
         }
         else if (count > overpopulation) {
             state[y][x] = status.killed;
-            fill('red', x, y);
+            fill('#999999', x, y);
         }
     }
     // Generation
     else {
-        if (count > 2) {
+        if ((count >= genMin) && (count <= genMax)) {
             state[y][x] = status.alive;
             fill('black', x, y);
         }
