@@ -1,4 +1,4 @@
-// states that are true persist through grid on/off
+//
 
 $(document).ready(function () {
 // block size`
@@ -139,14 +139,10 @@ $("#stop").click(function(e){
 });
 
 $("#next").click(function(e){
+    console.log("Height" + state.length);
     for (var i = 0; i < state.length; i++) {
         for (var j = 0; j < state[i].length; j++) {
-            if (state[j][i] == status.alive) {
-                determineFate(i,j);
-            }
-            else {
-                determineFate(i,j);
-            }
+            determineFate(i,j);
         }
     };
 });
@@ -182,26 +178,27 @@ var drawStates = function() {
 }
 
 var determineFate = function(x, y) {
-    console.log(x);
-    console.log(y);
     var count = 0;
-    var yCorner = y + radius;
+    var yCorner = y - radius;
     var xCorner = x - radius;
     var length = (2*radius)+1;
 
-    
+    // console.log(xCorner);
+    // console.log(yCorner);
 
     for (var i = 0; i < length; i++) {
         for (var j = 0; j < length; j++) {
-            // Don't check Corner Cases
-            if ((yCorner-i) > 0 && (xCorner+j) > 0) {
-                // console.log(yCorner-i);
+
+            // Don't check Corner Cases: <0 or >height
+            if (((yCorner+i) >= 0) && ((xCorner+j) >= 0) && ((yCorner+i) < state.length) && ((xCorner+j) < state[i].length)) {
+                // console.log("y: " + (yCorner+i) + " x: " + (xCorner+j));
+                // console.log(yCorner+i);
                 // console.log(xCorner+j);
-                if (state[yCorner-i][xCorner+j] == status.alive) {
+                if (state[yCorner+i][xCorner+j] == status.alive) {
                     count++;
+                    console.log("count: " + count);
                 }
             }
-            
         }
     }
 
