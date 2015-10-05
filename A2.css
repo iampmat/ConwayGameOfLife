@@ -13,3 +13,7 @@ canvas {
     margin-left: auto;
     margin-right: auto;
 }
+
+#slider {
+	width: 400px;
+}

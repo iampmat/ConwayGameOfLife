@@ -1,3 +1,4 @@
+// change colors
 //
 
 $(document).ready(function () {
@@ -9,7 +10,7 @@ var grid = true;
 var canvas = document.getElementById('c');
 var context = canvas.getContext('2d');
 // var used to turn off interval
-var interval;
+var time;
 // how many cells fit on the canvas
 var w = Math.floor((canvas.width / blockSize));
 var h = Math.floor((canvas.height / blockSize));
@@ -26,17 +27,28 @@ var overpopulation = 3;
 var genMin = 3;
 var genMax = 3;
 
-// create empty state array
+// create empty state array and empty count array
 var state = new Array(h);
-for (var y = 0; y < h; ++y) {
-    state[y] = new Array(w);
-} 
+var countArr = new Array(h);
 
-// Initialize array
+var createArrays = function() {
+    // create empty state array and empty count array
+    state = new Array(h);
+    countArr = new Array(h);
+    for (var y = 0; y < h; ++y) {
+        state[y] = new Array(w);
+        countArr[y] = new Array(w);
+    } 
+}
+
+createArrays();
+
+// Initialize arrays
 for (var i = 0; i < state.length; i++) {
     for (var j = 0; j < state[i].length; j++) {
         fill('#c0c0c0', i, j);
         state[j][i] = status.dead;
+        countArr[j][i] = 0;
     }
 }
 
@@ -106,9 +118,7 @@ $("#setHW").click(function(e) {
     h = Math.floor((canvas.height / blockSize));
 
     // Create new array for new w and h
-    for (var y = 0; y < h; ++y) {
-        state[y] = new Array(w);
-    }
+    createArrays();
 
     // blockSize = canvas.height / $("#height").val();
     if (grid) {
@@ -116,37 +126,68 @@ $("#setHW").click(function(e) {
     }
 });
 
-$("#gridIO").click(function(e) {
-    e.preventDefault();
-    if (grid) {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        drawStates();
-        grid = false;
-    }
-    else {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        drawGrid();
-        drawStates();
-        grid = true;
+// Turns grid on or off
+// $("#gridIO").click(function(e) {
+//     e.preventDefault();
+//     if (grid) {
+//         context.clearRect(0, 0, canvas.width, canvas.height);
+//         drawStates();
+//         grid = false;
+//     }
+//     else {
+//         context.clearRect(0, 0, canvas.width, canvas.height);
+//         drawGrid();
+//         drawStates();
+//         grid = true;
+//     }
+// });
+
+// Adjust the speed
+$( "#slider" ).slider({
+    min: 0,
+    max: 1000,
+    step: 1,
+    change: function( event, ui ) {
+        time = ui.value;
     }
 });
 
+$("#reset").click(function(e){
+    for (var i = 0; i < state.length; i++) {
+        for (var j = 0; j < state[i].length; j++) {
+            fill('#c0c0c0', i, j);
+            state[j][i] = status.dead;
+            countArr[j][i] = 0;
+        }
+    }
+    drawGrid();
+})
+
 $("#start").click(function(e){
-    startGame(1000);
+    startGame(time);
     $("#next").prop('disabled', true);
+    $("#slider").slider( "option", "disabled", true);
 });
 
 $("#stop").click(function(e){
     clearInterval(interval);
     $("#next").prop('disabled', false);
+    $("#slider").slider( "option", "disabled", false);
 });
 
 $("#next").click(function(e){
     for (var i = 0; i < state.length; i++) {
         for (var j = 0; j < state[i].length; j++) {
+            determineCount(i,j);
+        }
+    }
+
+    for (var i = 0; i < state.length; i++) {
+        for (var j = 0; j < state[i].length; j++) {
             determineFate(i,j);
         }
     }
+
     drawGrid();
 });
 
@@ -158,6 +199,12 @@ function fill(s, gx, gy) {
 
 var startGame = function(time) {
     interval = setInterval(function() {
+        for (var i = 0; i < state.length; i++) {
+            for (var j = 0; j < state[i].length; j++) {
+                determineCount(i,j);
+            }
+        }
+
         for (var i = 0; i < state.length; i++) {
             for (var j = 0; j < state[i].length; j++) {
                 determineFate(i,j);
@@ -183,32 +230,35 @@ var drawStates = function() {
     }
 }
 
-var determineFate = function(x, y) {
+var determineCount = function(x, y) {
     var count = 0;
     var yCorner = y - radius;
     var xCorner = x - radius;
     var length = (2*radius)+1;
-
-    // console.log(xCorner);
-    // console.log(yCorner);
 
     for (var i = 0; i < length; i++) {
         for (var j = 0; j < length; j++) {
 
             // Don't check Corner Cases: <0 or >height
             if (((yCorner+i) >= 0) && ((xCorner+j) >= 0) && ((yCorner+i) < state.length) && ((xCorner+j) < state[i].length)) {
+
                 // console.log("y: " + (yCorner+i) + " x: " + (xCorner+j));
                 // console.log(yCorner+i);
                 // console.log(xCorner+j);
                 if (state[yCorner+i][xCorner+j] == status.alive) {
                     count++;
-                    console.log("count: " + count);
                 }
             }
         }
-    }
+    }  
+    countArr[y][x] = count;  
+}
+
+var determineFate = function(x, y) {
+    var count = countArr[y][x];
 
     if (state[y][x] == status.alive) {
+
         // account for the state in the center
         count--;
 
@@ -232,7 +282,7 @@ var determineFate = function(x, y) {
             state[y][x] = status.alive;
             fill('black', x, y);
         }
-    }    
+    }
 }
 
 });
