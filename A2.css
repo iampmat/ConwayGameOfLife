@@ -2,9 +2,11 @@ canvas {
     background-color: #c0c0c0;
     padding-left: 0;
     padding-right: 0;
+    margin: 25px;
     margin-left: auto;
     margin-right: auto;
     display: block;
+    position: relative;
 }
 
 #size {
@@ -16,4 +18,24 @@ canvas {
 
 #slider {
 	width: 400px;
+	margin: auto;
+	margin-top: 25px;
+	margin-bottom: -5px;
+}
+
+h1 {
+	text-align: center;
+}
+
+#underBoard {
+	text-align: center;
+}
+
+body {
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  	Helvetica, Arial, "Lucida Grande", sans-serif;
+  	padding-left: 200px;
+  	padding-right: 200px;
+  	font-size: 12px;
+  	line-height: 23px;
 }

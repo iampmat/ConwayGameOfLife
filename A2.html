@@ -11,22 +11,35 @@
 		<title>Conway Game of Life</title>
 	</head>
 	<body>
-
+		<h1>Conway Game of Life</h1>
 		<form id="size">
-  			height: <input id="height" type="text" value="20">
-  			width: <input id="width" type="text" value="20">
-  			<button id="setHW">Set</button>
+  			Height: <input id="height" type="text" value="60">
+  			Width: <input id="width" type="text" value="60">
+
+  			Radius: <input id="radius" type="text" value="1">
+  			Death by Lonliness: <input id="lonely" type="text" value="2"></br>
+  			Death by Overpopulation: <input id="overpop" type="text" value="3">
+  			Generate cell between: <input id="gmin" type="text" value="3"> and <input id="gmax" type="text" value="3"> neighbors
+  			</br><center><button id="setHW">Set</button></center>
 		</form>
 
-		<!-- <button id="gridIO">Turn Grid ON/OFF</button> -->
-		<button id="reset">Reset Board</button>
-		<button id="start">Start</button>
-		<button id="stop">Stop</button>
-		<button id="next">Next Step</button>
+		<canvas id="c" width="600" height="600"></canvas>
 
-		<div id="slider"></div>
+		<div id="underBoard">
+			<!-- <button id="gridIO">Turn Grid ON/OFF</button> -->
+			<button id="reset">Reset Board</button>
+			<button id="random">Random</button>
+			<button id="start">Start</button>
+			<button id="stop">Stop</button>
+			<button id="next">Next Step</button>
 
-		<canvas id="c" width="200" height="200" />
+			<div id="sliderDiv">
+				<div id="slider"></div>
+				<p>Speed</p>
+			</div>
+		</div>
+
+		
 
 	</body>
 </html>
